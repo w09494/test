@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<style>
+			*{
+				margin: 0;
+				padding: 0;
+			}
+			.fa{
+				width: 63px;
+				height: 23px;
+				background: #FFF0F0;
+			}
+			.model_box{
+				width: 100%;
+				height: 100%;
+				position: absolute;
+				top: 0;
+				left: 0;
+				bottom: 0;
+				right: 0;
+				margin: auto;
+				background: rgba(0,0,0,.5);
+				display: none;
+			}
+			.x{
+				position: absolute;
+				top: 0;
+				right: 13px;
+				cursor: pointer;
+			}
+			.model{
+				width: 800px;
+				height: 236px;
+				margin: 100px auto 0;
+				position: relative;
+				border-radius: 5px;
+				padding: 10px;
+				display: flex;
+				flex-direction: column;
+				justify-content: space-between;
+				background: white;
+				z-index: 2;
+			}
+			.model .model_input{
+				display: flex;
+				flex-direction: column;
+			}
+			.model h2{
+				border-bottom: 1px solid #e5e5e5;
+				padding-bottom: 10px;
+			}
+			.model .model_input{
+				border-bottom: 1px solid #e5e5e5;
+				padding-bottom: 10px;
+			}
+			.model .model_input span{
+				display: block;
+				font-weight: bold;
+				font-size: 19px;
+			}
+			.model .model_input input{
+				width: 600px;
+				height: 24px;
+			}
+			.model .model_btn button {
+				height: 25px;
+				padding: 0 12px;
+				background: #e6e6e6;
+				border-color: #adadad;
+			}
+			#menu{
+				position: absolute;
+				padding-left: 15px;
+				border: 1px solid grey;
+				display: none;
+			}
+		</style>
+	</head>
+	<body>
+		<button onclick="fabu()" class="fa">发布</button>
+		<div class="boxs">
+			<ul>
+				<li>
+					<span class="user"></span>
+					<span class="news"></span>
+				</li>
+			</ul>
+		</div>
+		<div class="model_box">
+			<div class="model">
+			<span class="x">x</span>
+				<h2 class="title">News message to this</h2>
+				<div class="model_input">
+					<lable><span class="username">username:</span><input id="input_user" type="text"></lable>
+					<lable><span class="username">text:</span><input id="input_text" type="text"></lable>
+				</div>
+				<div class="model_btn">
+					<button class="close_btn">close</button>
+					<button class="send_btn">send message</button>
+				</div>
+			</div>
+		</div>
+		
+		
+		<div id="menu">
+			<div class="menu1 chehui">撤回</div>
+			<div class="menu1 del">删除</div>
+		</div>
+		<script type="text/javascript">
+			var model_box = document.querySelector(".model_box");
+			var fabu = ()=>{
+				model_box.style.display = "block";
+			}
+			
+			// 取消系统右键菜单
+			document.oncontextmenu = (e)=>{
+				return false;
+			}
+			
+			class model{
+				constructor() {
+				    this.user = document.querySelector("#input_user")
+					this.text = document.querySelector("#input_text")
+					this.x = document.querySelector(".x")
+					this.close_btn = document.querySelector(".close_btn")
+					this.send_btn = document.querySelector(".send_btn")
+					this.box = document.querySelector(".boxs");
+					this.user = document.querySelector("#input_user");
+					this.text = document.querySelector("#input_text");
+					this.menu = document.querySelector("#menu");
+					this.time = 0;
+					this.init()
+				}
+				init(){
+					this.bindTap();
+					this.mouseRight();
+				}
+				bindTap(){
+					var _this = this;
+					document.querySelector(".model_box").onclick = (e)=>{
+						e = e || window.event;
+						var target = e.target || e.srcElement;
+						switch (target.classList[0]){
+							case "x": case "close_btn": case "model_box": _this.close();
+								break;
+							case "send_btn": _this.send(_this.user.value,_this.text.value);
+							default:
+								break;
+						}
+					}
+					
+// 					_this.menu.onclick = function(e){
+// 						e = e || window.event;
+// 						var target = e.target || e.srcElement;
+// 						switch (target.classList[1]){
+// 							case "chehui": _this.chehui();
+// 								break;
+// 							case "del":_this.del();
+// 								break;
+// 							default:
+// 								break;
+// 						}
+// 					}
+					
+					_this.box.onmouseup = function(e){
+						var self = this
+						e = e || window.event;
+						var targets = e.target|| e.srcElement;
+						console.log(targets.parentElement);
+						if (targets.classList[1] == "span") {
+							var lis = targets.parentElement;
+						}
+						_this.menu.onclick = function(e){
+							e = e || window.event;
+							var target = e.target || e.srcElement;
+							switch (target.classList[1]){
+								case "chehui": _this.chehui(lis);
+									break;
+								case "del":_this.del(lis);
+									break;
+								default:
+									break;
+							}
+						}
+					}
+				}
+				close(){
+					model_box.style.display = "none";
+				}
+				
+				mouseRight(){
+					var _this = this;
+					document.onmouseup = function (eve) {
+				        //event.button用来判断鼠标按下的是那个按键。
+				        //在非IE下，左键0  中键1  右键2
+				        //IE下，左键1 右键2 中键4
+				        if(eve.button == 2){
+				            _this.menu.style.left = eve.clientX+'px';
+				            _this.menu.style.top = eve.clientY+'px';
+				            _this.menu.style.display = 'block';
+				        }else{
+				            _this.menu.style.display = 'none';
+				        }
+				    }
+				}
+				
+				chehui(lis){
+					var _this = this;
+					var nowtime = new Date().getTime();
+					
+					if (nowtime-_this.time<120000) {
+						_this.del(lis)
+					} else{
+						alert("超过2分钟！")
+					}
+				}
+				
+				
+				del(tar){
+					var _this = this;
+					console.log(tar);
+					tar.parentNode.removeChild(tar);
+				}
+				
+				send(user,text){
+					var _this = this
+					var html = '';
+					html += `<li>
+							<span class="user span">${user}：</span>
+							<span class="news span">${text}</span>
+						</li>`
+					if (user!=""||text!="") {
+						_this.box.children[0].innerHTML += html;
+						_this.time = new Date().getTime();
+						console.log(_this.time);
+					}
+					
+					_this.user.value = "";
+					_this.text.value = "";
+				}
+			}
+			new model();
+		</script>
+		<script>
+			
+		</script>
+	</body>
+</html>
